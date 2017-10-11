@@ -1,6 +1,6 @@
 {
-  "name": "eliseumds-babel-plugin-universal-import",
-  "version": "0.0.0-development",
+  "name": "babel-plugin-universal-import-ssr",
+  "version": "0.0.1",
   "description": "Babel plugin to transform import() into its Universal counterpart",
   "main": "index.js",
   "repository": {
