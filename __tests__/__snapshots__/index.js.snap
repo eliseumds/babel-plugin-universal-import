@@ -183,6 +183,7 @@ import _universalImport from \\"babel-plugin-universal-import/universalImport.js
 _universalImport({
   id: \\"./Foo\\",
   file: \\"currentFile.js\\",
+  load: require(\\"./Foo\\").default,
   path: () => _path.join(__dirname, \\"./Foo\\"),
   resolve: () => require.resolveWeak(\\"./Foo\\"),
   chunkName: () => \\"Foo\\"

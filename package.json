@@ -1,16 +1,16 @@
 {
-  "name": "babel-plugin-universal-import",
+  "name": "eliseumds-babel-plugin-universal-import",
   "version": "0.0.0-development",
   "description": "Babel plugin to transform import() into its Universal counterpart",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/faceyspacey/babel-plugin-universal-import.git"
+    "url": "https://github.com/eliseumds/babel-plugin-universal-import.git"
   },
   "bugs": {
-    "url": "https://github.com/faceyspacey/babel-plugin-universal-import/issues"
+    "url": "https://github.com/eliseumds/babel-plugin-universal-import/issues"
   },
-  "homepage": "https://github.com/faceyspacey/babel-plugin-universal-import#readme",
+  "homepage": "https://github.com/eliseumds/babel-plugin-universal-import#readme",
   "author": "James Gillmore james@faceyspacey.com>",
   "license": "MIT",
   "scripts": {

@@ -9,6 +9,7 @@ module.exports = function ({ types: t, template }) {
   const chunkNameTemplate = template('() => MODULE')
   const pathTemplate = template('() => PATH.join(__dirname, MODULE)')
   const resolveTemplate = template('() => require.resolveWeak(MODULE)')
+  const syncRequireTemplate = template('require(MODULE).default')
   const loadTemplate = template(
     '() => Promise.all([IMPORT, IMPORT_CSS(MODULE)]).then(proms => proms[0])'
   )
@@ -122,6 +123,14 @@ module.exports = function ({ types: t, template }) {
     return t.objectProperty(t.identifier('load'), load)
   }
 
+  function loadOnServerOption(p, importArgNode) {
+    const syncRequire = syncRequireTemplate({
+      MODULE: importArgNode
+    }).expression
+
+    return t.objectProperty(t.identifier('load'), syncRequire)
+  }
+
   function pathOption(p, importArgNode) {
     const path = pathTemplate({
       PATH: getPath(p),
@@ -174,6 +183,7 @@ module.exports = function ({ types: t, template }) {
           ? [
             idOption(importArgNode),
             fileOption(p),
+            loadOnServerOption(p, importArgNode),
             pathOption(p, importArgNode),
             resolveOption(importArgNode),
             chunkNameOption(importArgNode)
