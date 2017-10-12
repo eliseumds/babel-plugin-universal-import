@@ -25,7 +25,7 @@ module.exports = function ({ types: t, template }) {
   function getUniversalImport(p) {
     if (!p.hub.file[universalImportId]) {
       const universal = p.hub.file.addImport(
-        'babel-plugin-universal-import/universalImport.js',
+        'babel-plugin-universal-import-ssr/universalImport.js',
         'default',
         'universalImport'
       )
@@ -38,7 +38,7 @@ module.exports = function ({ types: t, template }) {
   function getImportCss(p) {
     if (!p.hub.file[importCssId]) {
       const importCss = p.hub.file.addImport(
-        'babel-plugin-universal-import/importCss.js',
+        'babel-plugin-universal-import-ssr/importCss.js',
         'default',
         'importCss'
       )
