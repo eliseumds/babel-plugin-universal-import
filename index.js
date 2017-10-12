@@ -157,7 +157,7 @@ module.exports = function ({ types: t, template }) {
   }
 
   return {
-    name: 'universal-import',
+    name: 'universal-import-ssr',
     visitor: {
       Import(p) {
         if (p[visited]) return
