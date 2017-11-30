@@ -6,13 +6,13 @@ const visited = Symbol('visited')
 
 const IMPORT_UNIVERSAL_DEFAULT = {
   id: Symbol('universalImportId'),
-  source: 'babel-plugin-universal-import/universalImport',
+  source: 'babel-plugin-universal-import-ssr/universalImport',
   nameHint: 'universalImport'
 }
 
 const IMPORT_CSS_DEFAULT = {
   id: Symbol('importCssId'),
-  source: 'babel-plugin-universal-import/importCss',
+  source: 'babel-plugin-universal-import-ssr/importCss',
   nameHint: 'importCss'
 }
 
