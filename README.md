@@ -101,7 +101,7 @@ const UniversalComponent = universal(props => universalImport({
   resolve: props => require.resolveWeak(`./${props.page}`),
   load: props => Promise.all([
     import( /* webpackChunkName: '[request]' */ `./${props.page}`),
-    importCss(page)
+    importCss(props.page)
   ]).then(proms => proms[0])
 }));
 
@@ -119,6 +119,25 @@ Perhaps the most powerful part however is that it also attempts to import a sepa
 
 And maybe even *cooler* to some: you don't have to do `universal(() => import())`. I.e. you don't have to wrap it in a function any longer when using `react-universal-component`, similar to `dynamic(import())` in Next.js...*unless of course you're making use of the extremely useful `props` argument.*
 
+## Typescript and non-Babel environments
+
+If you can't use babel, you can either copy what this plugin does above, or you can do a shorter version where you just put the important configuration key/vals on the 2nd options argument to `universal`:
+
+```js
+import universal from 'react-universal-component'
+import importCss from 'babel-plugin-universal-import/importCss.js'
+
+const load = props => Promise.all([
+    import( /* webpackChunkName: '[request]' */ `./${props.page}`),
+    importCss(props.page)
+  ]).then(proms => proms[0])
+
+const UniversalComponent = universal(load, {
+  chunkName: props => props.page,
+  resolve: props => require.resolveWeak(`./${props.page}`)
+});
+```
+> notice `chunkName` and `resolve` as standard options on the 2nd options argument.
 
 ## Babel Server Or Webpack < 2.2.20
 
@@ -129,6 +148,20 @@ If your compiling the server with Babel, set the following option so `import()` 
   "plugins": [
     ["universal-import", {
       "babelServer": true
+    }]
+  ]
+}
+```
+
+## Supressing console warnings
+
+When navigating across pages, warnings will be displayed to alert you about any potential missing CSS chunks. If you're not using the CSS functionality of this plugin or just want to keep your console clean, use the `disableWarnings` option like so:
+
+```js
+{
+  "plugins": [
+    ["universal-import", {
+      "disableWarnings": true
     }]
   ]
 }
@@ -155,7 +188,7 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 
 ## Tests
 
-Reviewing a package's tests are a great way to get familiar with it. It's direct insight into the capabilities of the given package (if the tests are thorough). What's even better is a screenshot of the tests neatly organized and grouped (you know the whole "a picture says a thousand words" thing). 
+Reviewing a package's tests are a great way to get familiar with it. It's direct insight into the capabilities of the given package (if the tests are thorough). What's even better is a screenshot of the tests neatly organized and grouped (you know the whole "a picture says a thousand words" thing).
 
 Below is a screenshot of this module's tests running in [Wallaby](https://wallabyjs.com) *("An Integrated Continuous Testing Tool for JavaScript")* which everyone in the React community should be using. It's fantastic and has taken my entire workflow to the next level. It re-runs your tests on every change along with comprehensive logging, bi-directional linking to your IDE, in-line code coverage indicators, **and even snapshot comparisons + updates for Jest!** I requestsed that feature by the way :). It's basically a substitute for live-coding that inspires you to test along your journey.
 
@@ -164,4 +197,3 @@ Below is a screenshot of this module's tests running in [Wallaby](https://wallab
 
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, routing).
-
