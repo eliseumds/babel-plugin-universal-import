@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-universal-import-ssr",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Babel plugin to transform import() into its Universal counterpart",
   "main": "index.js",
   "repository": {
@@ -60,7 +60,9 @@
     "webpack": "^4.4.0"
   },
   "jest": {
-    "testMatch": ["**/?(*.)(spec|test).js?(x)"]
+    "testMatch": [
+      "**/?(*.)(spec|test).js?(x)"
+    ]
   },
   "config": {
     "commitizen": {
