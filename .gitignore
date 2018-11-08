@@ -2,3 +2,6 @@ dist
 coverage
 node_modules
 *.log
+.idea
+.DS_Store
+yarn-error.log

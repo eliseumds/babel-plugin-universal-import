@@ -64,7 +64,6 @@ const UniversalComponent = universal(import('./Foo.js'))
 
 import universal from 'react-universal-component'
 import universalImport from 'babel-plugin-universal-import/universalImport.js'
-import importCss from 'babel-plugin-universal-import/importCss.js'
 import path from 'path'
 
 const UniversalComponent = universal(universalImport({
@@ -72,8 +71,7 @@ const UniversalComponent = universal(universalImport({
   path: () => path.join(__dirname, './Foo.js'),
   resolve: () => require.resolveWeak('./Foo.js'),
   load: () => Promise.all([
-    import( /* webpackChunkName: 'Foo' */ './Foo.js'),
-    importCss('Foo')
+    import( /* webpackChunkName: 'Foo' */ './Foo.js')
   ]).then(proms => proms[0])
 }))
 
@@ -92,7 +90,6 @@ const UniversalComponent = universal(props => import(`./${props.page}`))
 
 import universal from 'react-universal-component'
 import universalImport from 'babel-plugin-universal-import/universalImport.js'
-import importCss from 'babel-plugin-universal-import/importCss.js'
 import path from 'path'
 
 const UniversalComponent = universal(props => universalImport({
@@ -100,22 +97,20 @@ const UniversalComponent = universal(props => universalImport({
   path: props => path.join(__dirname, `./${props.page}`),
   resolve: props => require.resolveWeak(`./${props.page}`),
   load: props => Promise.all([
-    import( /* webpackChunkName: '[request]' */ `./${props.page}`),
-    importCss(props.page)
+    import( /* webpackChunkName: '[request]' */ `./${props.page}`)
   ]).then(proms => proms[0])
 }));
 
 <UniversalComponent page='Foo' />
 ```
-> NOTE: if you aren't using `react-universal-component` and you just want to serve CSS chunks from [extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin), use [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-universal-import) instead.
+> NOTE: if you aren't using `react-universal-component` and you just want to serve CSS chunks from [extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin), its not a problem! extract-css-chunks is completely standalone and fully HMR
 
-It names all your chunks using *magic comments* 🔮 behind the scenes and is derived from the imported file. This works with both static and dynamic import paths, as you can see above.
+It names all your chunks using *magic comments* (see webpack documentation on [magic comments](https://webpack.js.org/api/module-methods/#import-)) 🔮 behind the scenes and is derived from the imported file. This works with both static and dynamic import paths, as you can see above.
 
 Otherwise, what it's doing is providing all the different types of requires/paths/imports/etc needed by tools like [react-universal-component](https://github.com/faceyspacey/react-universal-component) to universally render your component.
 
 The targeted **use-case** for all this is dynamic imports where you can pass a `page` prop to the resulting component, thereby allowing you to create one `<UniversalComponent page={page} />` for a large number of your components. This is a major upgrade to the previous way of having to make a hash of a million async components in a wrapping component. You no longer have to think about *Universal Components* as anything different than your other components that use simple HoCs.
 
-Perhaps the most powerful part however is that it also attempts to import a separate CSS file along with js chunks for optimum chunk sizes, caching and performance. Look in what `Promise.all` does. To fulfill this mission you must be using [extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin) to create multiple CSS chunks for dynamic imports.
 
 And maybe even *cooler* to some: you don't have to do `universal(() => import())`. I.e. you don't have to wrap it in a function any longer when using `react-universal-component`, similar to `dynamic(import())` in Next.js...*unless of course you're making use of the extremely useful `props` argument.*
 
@@ -125,11 +120,9 @@ If you can't use babel, you can either copy what this plugin does above, or you 
 
 ```js
 import universal from 'react-universal-component'
-import importCss from 'babel-plugin-universal-import/importCss.js'
 
 const load = props => Promise.all([
-    import( /* webpackChunkName: '[request]' */ `./${props.page}`),
-    importCss(props.page)
+    import( /* webpackChunkName: '[request]' */ `./${props.page}`)
   ]).then(proms => proms[0])
 
 const UniversalComponent = universal(load, {
@@ -153,19 +146,41 @@ If your compiling the server with Babel, set the following option so `import()` 
 }
 ```
 
-## Supressing console warnings
-
-When navigating across pages, warnings will be displayed to alert you about any potential missing CSS chunks. If you're not using the CSS functionality of this plugin or just want to keep your console clean, use the `disableWarnings` option like so:
+## Include additional debugging info
+To prevent leaking of information, file names are not included in the final output. However, for debugging purposes, you may set the `includeFileName` flag option to true.  This will include the path to the source file from which the import() is happening to be exposed.
 
 ```js
 {
   "plugins": [
     ["universal-import", {
-      "disableWarnings": true
+      "includeFileName": true
     }]
   ]
 }
 ```
+
+## Advanced magic comments
+This plugin supports currying of the following magic comments defiend by Webpack to the transpiled output:
+
+- `webpackMode`
+- `webpackInclude`
+- `webpackExclude`
+- `webpackIgnore`
+- `webpackPreload`
+- `webpackPrefetch`
+
+In order to pass that on to the output, you must provide each magic comment in it's own comment block, e.g.
+
+```javascript
+import(
+  /* webpackMode: "lazy" */
+  /* webpackChunkName: "Foo" */
+  "./Foo"
+)
+```
+
+Order in which you specify them will not matter, and invalid leading comments will be stripped out. The logic for naming your webpack chunks remains the same if you specify any of these advanced options.  Please refer to the [webpack documentation](https://webpack.js.org/api/module-methods/#import-) for valid values and configurations of each of these settings.
+
 
 ## Next Steps
 
@@ -173,8 +188,6 @@ Checkout the rest of the packages in the *"Universal"* family:
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks)
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [extract-css-chunks-webpack-plugin](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin)
-
-*We realize things are bit confusing right now because of the shear number of packages. The next release is called `universal-render` and will bring everything under one roof, while adding a few final tricks. You heard it here first.*
 
 ## Caveat
 - For chunks to be properly created--and since their names are automatically generated for you--you can't have different chunks with the same name, say `index`. So instead of ```import(`./index`)```, make your imports like this: ```import(`../ComponentFolderA`)``` and ```import(`../ComponentFolderB`)```. Notice you're going back one directory--this allows the chunk name to be generated uniquely even though the entry point file is `index.js` for both components. In addition, if in multiple places you import the same module, make sure they both start with the same base directory name. **Again, using `..` is your friend. Initial dots and slashes will be stripped from the resulting chunk name.**
